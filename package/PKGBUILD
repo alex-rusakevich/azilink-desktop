@@ -1,10 +1,10 @@
 # Maintainer: Alexander Rusakevich <mr.alexander.rusakevich@gmail.com>
 pkgname='azilink-desktop-git'
-pkgver=r8.c00f172
+pkgver=r9.530cba6
 pkgrel=1
-pkgdesc=""
+pkgdesc="azilink pc companion"
 arch=("i686" "x86_64")
-url=""
+url="https://github.com/alex-rusakevich/azilink-desktop"
 license=('GPL3')
 groups=()
 depends=('openvpn' 'android-tools' 'android-udev' 'bash')

@@ -1,8 +1,8 @@
 default: install
 
 uninstall:
-	rm -rf /usr/share/azilink-desktop
-	rm -rf /usr/bin/azi
+	rm -rf $(DESTDIR)/usr/share/azilink-desktop
+	rm -rf $(DESTDIR)/usr/bin/azi
 
 install: 
 	mkdir -p $(DESTDIR)/usr/share/azilink-desktop
@@ -14,4 +14,4 @@ install:
 	cp ./azi $(DESTDIR)/usr/bin/azi
 
 run:
-	sudo /usr/bin/azi
+	/usr/bin/azi

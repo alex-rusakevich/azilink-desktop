@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+    
+[ "$UID" -eq 0 ] || exec sudo "$0" "$@"
+
+if [ -z "$1"]; then
+    AZI_FILES_DIR="/usr/share/azilink-desktop"
+else
+    AZI_FILES_DIR=$1
+fi
+
+log() {
+    local TIME_NOW=`date "+%Y-%m-%d %H:%M:%S.%5N"`
+    echo "[$TIME_NOW] azilink: $@"
+}
+
+init() {
+    log "Killing openvpn if running..."
+    pkill openvpn
+
+    log "Shutting down NetworkManager..."
+    sudo systemctl stop NetworkManager
+
+    log "Updating resolv.conf..."
+    sudo cp "$AZI_FILES_DIR/resolv.conf" /etc/
+}
+
+main() {
+    adb forward tcp:41927 tcp:41927
+    modprobe tun
+
+    log "Starting OpenVPN connection..."
+    sudo openvpn --config "$AZI_FILES_DIR/azilink.ovpn"
+}
+
+finish() {
+    log "Starting NetworkManager..."
+    sudo systemctl start NetworkManager
+
+    log "Exiting..."
+    exit 0
+}
+
+init
+main
+finish

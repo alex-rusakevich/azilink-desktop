@@ -4,13 +4,13 @@ uninstall:
 	rm -rf /usr/share/azilink-desktop
 	rm -rf /usr/bin/azi
 
-install: uninstall
-	mkdir /usr/share/azilink-desktop
+install: 
+	mkdir $(DESTDIR)/usr/share/azilink-desktop
 
-	cp ./azilink.ovpn /usr/share/azilink-desktop/azilink.ovpn
-	cp ./resolv.conf /usr/share/azilink-desktop/resolv.conf
+	cp ./azilink.ovpn $(DESTDIR)/usr/share/azilink-desktop/azilink.ovpn
+	cp ./resolv.conf $(DESTDIR)/usr/share/azilink-desktop/resolv.conf
 
-	cp ./azi /usr/bin/azi
+	cp ./azi $(DESTDIR)/usr/bin/azi
 
 run:
 	sudo /usr/bin/azi

@@ -22,6 +22,10 @@ init() {
 
     log "Updating resolv.conf..."
     sudo cp "$AZI_FILES_DIR/resolv.conf" /etc/
+
+    #sudo adb kill-server
+    #sudo adb start-server
+    #sudo adb shell
 }
 
 main() {

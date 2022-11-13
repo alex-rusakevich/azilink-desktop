@@ -1,0 +1,34 @@
+# Maintainer: Alexander Rusakevich <mr.alexander.rusakevich@gmail.com>
+pkgname='azilink-desktop-git'
+pkgver=r4.83c61c8
+pkgrel=1
+pkgdesc=""
+arch=("i686" "x86_64")
+url=""
+license=('GPL3')
+groups=()
+depends=('openvpn' 'android-tools' 'android-udev' 'bash')
+makedepends=('git' 'make')
+provides=("${pkgname%-VCS}")
+conflicts=("${pkgname%-VCS}")
+replaces=()
+backup=()
+options=()
+install=
+source=('azilink-desktop-git::git+https://github.com/alex-rusakevich/azilink-desktop#branch=master')
+noextract=()
+md5sums=('SKIP')
+
+pkgver() {
+	cd "$srcdir/${pkgname%-VCS}"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+	cd "$srcdir/${pkgname%-VCS}"
+}
+
+package() {
+	cd "$srcdir/${pkgname%-VCS}"
+	make DESTDIR="$pkgdir" install
+}

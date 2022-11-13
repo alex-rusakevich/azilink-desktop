@@ -18,14 +18,10 @@ init() {
     pkill openvpn
 
     log "Shutting down NetworkManager..."
-    sudo systemctl stop NetworkManager
+    systemctl stop NetworkManager
 
     log "Updating resolv.conf..."
-    sudo cp "$AZI_FILES_DIR/resolv.conf" /etc/
-
-    #sudo adb kill-server
-    #sudo adb start-server
-    #sudo adb shell
+    cp "$AZI_FILES_DIR/resolv.conf" /etc/
 }
 
 main() {
@@ -33,12 +29,12 @@ main() {
     modprobe tun
 
     log "Starting OpenVPN connection..."
-    sudo openvpn --config "$AZI_FILES_DIR/azilink.ovpn"
+    openvpn --config "$AZI_FILES_DIR/azilink.ovpn"
 }
 
 finish() {
     log "Starting NetworkManager..."
-    sudo systemctl start NetworkManager
+    systemctl start NetworkManager
 
     log "Exiting..."
     exit 0

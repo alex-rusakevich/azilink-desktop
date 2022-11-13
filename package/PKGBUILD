@@ -1,6 +1,6 @@
 # Maintainer: Alexander Rusakevich <mr.alexander.rusakevich@gmail.com>
 pkgname='azilink-desktop-git'
-pkgver=r9.530cba6
+pkgver=r10.be7a074
 pkgrel=1
 pkgdesc="azilink pc companion"
 arch=("i686" "x86_64")

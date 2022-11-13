@@ -1,3 +1,4 @@
+.ONESHELL:
 default: install
 
 uninstall:
@@ -15,3 +16,8 @@ install:
 
 run:
 	/usr/bin/azi
+
+pkg:
+	cd package
+	makepkg -Cf
+	cd ..

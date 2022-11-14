@@ -2,18 +2,29 @@
     
 [ "$UID" -eq 0 ] || exec sudo "$0" "$@"
 
-if [ -z "$1"]; then
-    AZI_FILES_DIR="/usr/share/azilink-desktop"
-else
-    AZI_FILES_DIR=$1
-fi
+AZI_FILES_DIR="/usr/share/azilink-desktop"
+
+AZI_USAGE="$(basename "$0") [-h] [-p path] -- azilink pc companion
+
+where:
+    -h/--help               show this help text and exit
+    -p/--path path_to_dir   set a new custom path to a folder with azilink.ovpn and resolv.conf files (default is '$AZI_FILES_DIR')"
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -h|--help) echo "$AZI_USAGE"; exit 0;;
+        -p|--path) AZI_FILES_DIR="$2"; shift ;;
+        *) echo "Unknown parameter passed: $1" >&2; echo "$AZI_USAGE" >&2; exit 1 ;;
+    esac
+    shift
+done
 
 log() {
     local TIME_NOW=`date "+%Y-%m-%d %H:%M:%S.%5N"`
     echo "[$TIME_NOW] azilink: $@"
 }
 
-init() {
+start() {
     log "Killing openvpn if running..."
     pkill openvpn
 
@@ -40,6 +51,6 @@ finish() {
     exit 0
 }
 
-init
+start
 main
 finish

@@ -16,8 +16,3 @@ install:
 
 run:
 	/usr/bin/azi
-
-pkg:
-	cd package
-	makepkg -Cf
-	cd ..

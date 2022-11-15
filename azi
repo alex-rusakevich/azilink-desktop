@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 AZI_FILES_DIR="/usr/share/azilink-desktop"
-
-AZI_USAGE="Special thanks to @aziwoqpd for his azilink. Vote for him on https://github.com/aziwoqpd/azilink
-$(basename "$0") [-h -v -i -I] [-p path] -- azilink pc companion
+AZI_THANKS="Special thanks to @aziwoqpd for his azilink. Vote for him on https://github.com/aziwoqpd/azilink"
+AZI_USAGE="$(basename "$0") [-h -v -i -I] [-p path] -- azilink pc companion
 
 where:
     -h, --help               show this help text and exit
@@ -15,7 +14,11 @@ your phone's settings)
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-        -h|--help) echo "$AZI_USAGE"; exit 0;;
+        -h|--help) 
+            echo "$AZI_THANKS"
+            echo "$AZI_USAGE"
+            exit 0
+        ;;
         -v|--version) 
             echo `pacman -Q azilink-desktop-git`
             exit 0

@@ -32,6 +32,12 @@ log() {
 }
 
 start() {
+    if [ "$UID" -ne 0 ]
+    then
+        echo "Please, run $(basename "$0") from sudo" >&2
+        exit 1
+    fi
+
     log "Killing openvpn if running..."
     pkill openvpn
 

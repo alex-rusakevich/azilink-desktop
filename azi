@@ -4,18 +4,25 @@
 
 AZI_FILES_DIR="/usr/share/azilink-desktop"
 
-AZI_USAGE="$(basename "$0") [-h] [-p path] -- azilink pc companion
+AZI_USAGE="$(basename "$0") [-h] [-p path] -- azilink pc companion. Special thanks to @aziwoqpd for his azilink. \
+Vote for him on https://github.com/aziwoqpd/azilink
 
 where:
     -h, --help               show this help text and exit
     -v, --version            show program's version and exit
-    -p, --path path_to_dir   set a new custom path to a folder with azilink.ovpn and resolv.conf files (default is '$AZI_FILES_DIR')"
+    -p, --path path_to_dir   set a new custom path to a folder with azilink.ovpn, resolv.conf and azilink.apk (default is '$AZI_FILES_DIR')
+    -i, --install-apk        installing azilink's apk through adb and exit (you must allow installing apk using USB-debug mode in \
+your phone's settings)"
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -h|--help) echo "$AZI_USAGE"; exit 0;;
         -v|--version) echo `pacman -Q azilink-desktop-git`; exit 0;;
         -p|--path) AZI_FILES_DIR="$2"; shift ;;
+        -i|--install-apk) 
+            adb install -r "$AZI_FILES_DIR/azilink.apk"
+            exit 0
+        ;;
         *) echo "Unknown parameter passed: $1" >&2; echo "$AZI_USAGE" >&2; exit 1 ;;
     esac
     shift

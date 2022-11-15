@@ -11,6 +11,7 @@ install:
 
 	cp ./azilink.ovpn $(DESTDIR)/usr/share/azilink-desktop/azilink.ovpn
 	cp ./resolv.conf $(DESTDIR)/usr/share/azilink-desktop/resolv.conf
+	cp ./azilink.apk $(DESTDIR)/usr/share/azilink-desktop/azilink.apk
 
 	cp ./azi $(DESTDIR)/usr/bin/azi
 

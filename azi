@@ -7,12 +7,14 @@ AZI_FILES_DIR="/usr/share/azilink-desktop"
 AZI_USAGE="$(basename "$0") [-h] [-p path] -- azilink pc companion
 
 where:
-    -h/--help               show this help text and exit
-    -p/--path path_to_dir   set a new custom path to a folder with azilink.ovpn and resolv.conf files (default is '$AZI_FILES_DIR')"
+    -h, --help               show this help text and exit
+    -v, --version            show program's version and exit
+    -p, --path path_to_dir   set a new custom path to a folder with azilink.ovpn and resolv.conf files (default is '$AZI_FILES_DIR')"
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -h|--help) echo "$AZI_USAGE"; exit 0;;
+        -v|--version) echo `pacman -Q azilink-desktop-git`; exit 0;;
         -p|--path) AZI_FILES_DIR="$2"; shift ;;
         *) echo "Unknown parameter passed: $1" >&2; echo "$AZI_USAGE" >&2; exit 1 ;;
     esac

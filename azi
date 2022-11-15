@@ -3,25 +3,45 @@
 AZI_FILES_DIR="/usr/share/azilink-desktop"
 
 AZI_USAGE="Special thanks to @aziwoqpd for his azilink. Vote for him on https://github.com/aziwoqpd/azilink
-$(basename "$0") [-h] [-p path] -- azilink pc companion
+$(basename "$0") [-h -v -i -I] [-p path] -- azilink pc companion
 
 where:
     -h, --help               show this help text and exit
     -v, --version            show program's version and exit
     -p, --path path_to_dir   set a new custom path to a folder with azilink.ovpn, resolv.conf and azilink.apk (default is '$AZI_FILES_DIR')
     -i, --install-apk        installing (or reinstalling) azilink's apk through adb and exit (you must allow installing apk using USB-debug mode in \
-your phone's settings)"
+your phone's settings)
+    -I, --info               show package's full info and exit"
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -h|--help) echo "$AZI_USAGE"; exit 0;;
-        -v|--version) echo `pacman -Q azilink-desktop-git`; exit 0;;
-        -p|--path) AZI_FILES_DIR="$2"; shift ;;
+        -v|--version) 
+            echo `pacman -Q azilink-desktop-git`
+            exit 0
+        ;;
+        -p|--path) 
+            AZI_FILES_DIR="$2";
+            if [[ -z "$AZI_FILES_DIR" ]]
+            then
+                echo "No path specified after '$1'" >&2
+                exit 1
+            fi
+            shift 
+        ;;
         -i|--install-apk) 
             adb install -r "$AZI_FILES_DIR/azilink.apk"
             exit 0
         ;;
-        *) echo "Unknown parameter passed: $1" >&2; echo "$AZI_USAGE" >&2; exit 1 ;;
+        -I|--info)
+            echo "`pacman -Qi azilink-desktop-git`"
+            exit 0
+        ;;
+        *) 
+            echo "Unknown parameter passed: $1" >&2
+            echo "$AZI_USAGE" >&2
+            exit 1 
+        ;;
     esac
     shift
 done
@@ -34,7 +54,7 @@ log() {
 start() {
     if [ "$UID" -ne 0 ]
     then
-        echo "Please, run $(basename "$0") from sudo" >&2
+        echo "Main functionality of azilink requires sudo" >&2
         exit 1
     fi
 
@@ -50,6 +70,8 @@ start() {
 
 main() {
     adb forward tcp:41927 tcp:41927
+    [[ $? -ne 0 ]] && finish 1
+
     modprobe tun
 
     log "Starting OpenVPN connection..."
@@ -61,9 +83,9 @@ finish() {
     systemctl start NetworkManager
 
     log "Exiting..."
-    exit 0
+    exit $1
 }
 
 start
 main
-finish
+finish 0

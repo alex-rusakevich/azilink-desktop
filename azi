@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #   Created by Alexander Rusakevich (mr.alexander.rusakevich@gmail.com)
-#   Distributed with GNU GPL3 License
+#   Distributed under GNU GPL3 License
 #   The full source code is available at https://github.com/alex-rusakevich/azilink-desktop
 #   Special thanks to @aziwoqpd for his azilink. Vote for him on https://github.com/aziwoqpd/azilink
 #
@@ -14,21 +14,35 @@ where:
     -h, --help               show this help text and exit
     -v, --version            show program's version and exit
     -p, --path path_to_dir   set a new custom path to a folder with azilink.ovpn, resolv.conf and azilink.apk (default is '$AZI_FILES_DIR')
-[x] -c, --connect            connect to your phone with azilink app and USB-debugging mode on
-[x] -r, --reset              reset connections with all the registered phones             
+    -c, --connect            connect to your phone with azilink app and USB-debugging mode on and exit
+    -r, --reset              reset connections with all the registered phones and exit         
     -i, --install-apk        installing (or reinstalling) azilink's apk through adb and exit (you must allow installing apk using USB-debug mode in \
 your phone's developer settings)
     -I, --info               show package's full info and exit"
 AZI_GUIDE="This is what you need to do with your phone:
-1) enable developer settings;
+1) enable developer settings on your phone;
 2) enable USB-debugging and setup through USB;
-3) connect your phone using USB;
-4) if you don't have azilink app on your phone, install it using 'azi -i'
-5) set file transfer mode instead of charging only;
-6) start azilink app and make sure the service is active; 
-7) start azilink on pc side.
+3) connect your phone using USB cable;
+4) set file/media transfer mode / MTP instead of 'charging only' mode;
+5) type 'sudo azi -c' to connect your phone to azilink-desktop;
+6) if you don't have azilink app on your phone, install it using 'azi -i';
+7) start azilink app on your phone and make sure the service is active; 
+8) start azilink on pc side by just typing 'sudo azi'.
 
 You also can find this article helpful: https://wiki.archlinux.org/title/Android_tethering"
+
+check_sudo() {
+    if [ "$UID" -ne 0 ]
+    then
+        echo "$1 requires sudo" >&2
+        exit 1
+    fi
+}
+
+log() {
+    local TIME_NOW=`date "+%Y-%m-%d %H:%M:%S.%5N"`
+    echo "[$TIME_NOW] azilink: $@"
+}
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -60,10 +74,57 @@ while [[ "$#" -gt 0 ]]; do
             exit 0
         ;;
         -c|--connect)
+            check_sudo "Connecting your device"
 
+            echo "Please, select your device (Don't forget to enable 'File/Media transfer mode' instead of 'Charging-only mode'!)"
+            IFS=$'\n' read -d='' -r -a USB_DEVICES <<< "`lsusb`"
+            
+            count=1
+            for device in "${USB_DEVICES[@]}"
+            do
+                echo "$count) $device"
+                count=$(( count + 1 ))
+            done
+            IFS=
+
+            echo -n "Your phone is: #"
+            read phone_number
+            phone_number=$(( $phone_number - 1 ))
+
+            AZI_DEVICE=${USB_DEVICES[phone_number]}
+            AZI_VENDOR_ID="$(echo "$AZI_DEVICE"| grep -P '(?<=ID\s)\d+(?=:)' --no-messages -o)"
+
+            [ $SUDO_USER ] && user=$SUDO_USER || user=`whoami`
+
+            touch /etc/udev/rules.d/51-android.rules
+            echo "SUBSYSTEM==\"usb\", ATTR(idVendor)==\"$AZI_VENDOR_ID\", MODE=\"0666\" OWNER=\"$user\"" > '/etc/udev/rules.d/51-android.rules'
+            udevadm control --reload
+
+            log "Ensuring adb is running..."
+            adb kill-server
+            adb start-server
+
+            echo "`adb devices`"
+
+            adb shell "exit 0"
+            if [[ $? -ne 0 ]]; then 
+                echo "Unable to connect to your device. Did you accept connection on your phone?" >&2
+                exit 1
+            fi
+
+            log "Your device is ready to use! Hooray!"
+            log "Shutting down adb server..."
+            adb kill-server
+            exit 0
         ;;
         -r|--reset)
+            check_sudo "Resetting your connection"
 
+            rm -f /etc/udev/rules.d/51-android.rules
+            udevadm control --reload
+
+            log "Success."
+            exit 0
         ;;
         *) 
             echo "Unknown parameter passed: $1" >&2
@@ -74,17 +135,8 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-log() {
-    local TIME_NOW=`date "+%Y-%m-%d %H:%M:%S.%5N"`
-    echo "[$TIME_NOW] azilink: $@"
-}
-
 start() {
-    if [ "$UID" -ne 0 ]
-    then
-        echo "Main functionality of azilink requires sudo" >&2
-        exit 1
-    fi
+    check_sudo "Main functionality of azilink"
 
     log "Killing openvpn if running..."
     pkill openvpn

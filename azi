@@ -123,7 +123,11 @@ while [[ "$#" -gt 0 ]]; do
             rm -f /etc/udev/rules.d/51-android.rules
             udevadm control --reload
 
-            log "Success."
+            log "Restarting adb..."
+            adb kill-server
+            adb start-server
+
+            log "Successfully reset."
             exit 0
         ;;
         *) 

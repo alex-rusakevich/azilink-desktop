@@ -1,22 +1,41 @@
 #!/usr/bin/env bash
+#
+#   Created by Alexander Rusakevich (mr.alexander.rusakevich@gmail.com)
+#   Distributed with GNU GPL3 License
+#   The full source code is available at https://github.com/alex-rusakevich/azilink-desktop
+#   Special thanks to @aziwoqpd for his azilink. Vote for him on https://github.com/aziwoqpd/azilink
+#
 
 AZI_FILES_DIR="/usr/share/azilink-desktop"
 AZI_THANKS="Special thanks to @aziwoqpd for his azilink. Vote for him on https://github.com/aziwoqpd/azilink"
-AZI_USAGE="$(basename "$0") [-h -v -i -I] [-p path] -- azilink pc companion
+AZI_USAGE="$(basename "$0") [-h -v -c -r -i -I] [-p path] -- azilink pc companion
 
 where:
     -h, --help               show this help text and exit
     -v, --version            show program's version and exit
     -p, --path path_to_dir   set a new custom path to a folder with azilink.ovpn, resolv.conf and azilink.apk (default is '$AZI_FILES_DIR')
+[x] -c, --connect            connect to your phone with azilink app and USB-debugging mode on
+[x] -r, --reset              reset connections with all the registered phones             
     -i, --install-apk        installing (or reinstalling) azilink's apk through adb and exit (you must allow installing apk using USB-debug mode in \
-your phone's settings)
+your phone's developer settings)
     -I, --info               show package's full info and exit"
+AZI_GUIDE="This is what you need to do with your phone:
+1) enable developer settings;
+2) enable USB-debugging and setup through USB;
+3) connect your phone using USB;
+4) if you don't have azilink app on your phone, install it using 'azi -i'
+5) set file transfer mode instead of charging only;
+6) start azilink app and make sure the service is active; 
+7) start azilink on pc side.
+
+You also can find this article helpful: https://wiki.archlinux.org/title/Android_tethering"
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -h|--help) 
             echo "$AZI_THANKS"
-            echo "$AZI_USAGE"
+            echo -e "$AZI_USAGE\n"
+            echo "$AZI_GUIDE"
             exit 0
         ;;
         -v|--version) 
@@ -39,6 +58,12 @@ while [[ "$#" -gt 0 ]]; do
         -I|--info)
             echo "`pacman -Qi azilink-desktop-git`"
             exit 0
+        ;;
+        -c|--connect)
+
+        ;;
+        -r|--reset)
+
         ;;
         *) 
             echo "Unknown parameter passed: $1" >&2

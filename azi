@@ -6,15 +6,18 @@
 #   Special thanks to @aziwoqpd for his azilink. Vote for him on https://github.com/aziwoqpd/azilink
 #
 
+bold=$(tput bold)
+normal=$(tput sgr0)
+
 AZI_FILES_DIR="/usr/share/azilink-desktop"
-AZI_THANKS="Special thanks to @aziwoqpd for his azilink. Vote for him on https://github.com/aziwoqpd/azilink"
-AZI_USAGE="$(basename "$0") [-h -v -c -r -i -I] [-p path] -- azilink pc companion
+AZI_THANKS="Special thanks to ${bold}@aziwoqpd${normal} for his azilink. Vote for him on https://github.com/aziwoqpd/azilink"
+AZI_USAGE="$(basename "$0") [-h -v -reg -r -i -I] [-p path] -- azilink pc companion
 
 where:
     -h, --help               show this help text and exit
     -v, --version            show program's version and exit
     -p, --path path_to_dir   set a new custom path to a folder with azilink.ovpn, resolv.conf and azilink.apk (default is '$AZI_FILES_DIR')
-    -c, --connect            connect to your phone with azilink app and USB-debugging mode on and exit
+    -reg, --register         register your phone with azilink app and USB-debugging mode on and exit
     -r, --reset              reset connections with all the registered phones and exit         
     -i, --install-apk        installing (or reinstalling) azilink's apk through adb and exit (you must allow installing apk using USB-debug mode in \
 your phone's developer settings)
@@ -23,8 +26,8 @@ AZI_GUIDE="This is what you need to do with your phone:
 1) enable developer settings on your phone;
 2) enable USB-debugging and setup through USB;
 3) connect your phone using USB cable;
-4) set file/media transfer mode / MTP instead of 'charging only' mode;
-5) type 'sudo azi -c' to connect your phone to azilink-desktop;
+4) set ${bold}file/media transfer mode / MTP${normal} instead of 'charging only' mode;
+5) type 'sudo azi -reg' to connect your phone to azilink-desktop;
 6) if you don't have azilink app on your phone, install it using 'azi -i';
 7) start azilink app on your phone and make sure the service is active; 
 8) start azilink on pc side by just typing 'sudo azi'.
@@ -34,7 +37,7 @@ You also can find this article helpful: https://wiki.archlinux.org/title/Android
 check_sudo() {
     if [ "$UID" -ne 0 ]
     then
-        echo "$1 requires sudo" >&2
+        echo "$1 requires ${bold}sudo${normal}" >&2
         exit 1
     fi
 }
@@ -73,10 +76,13 @@ while [[ "$#" -gt 0 ]]; do
             echo "`pacman -Qi azilink-desktop-git`"
             exit 0
         ;;
-        -c|--connect)
+        -reg|--register)
             check_sudo "Connecting your device"
 
-            echo "Please, select your device (Don't forget to enable 'File/Media transfer mode' instead of 'Charging-only mode'!)"
+            echo -n "Make sure you've enabled ${bold}'File/Media transfer mode'${normal} instead of 'Charging-only mode' and press Enter."
+            read
+
+            echo "Please, select your device:"
             IFS=$'\n' read -d='' -r -a USB_DEVICES <<< "`lsusb`"
             
             count=1
@@ -100,7 +106,7 @@ while [[ "$#" -gt 0 ]]; do
             echo "SUBSYSTEM==\"usb\", ATTR(idVendor)==\"$AZI_VENDOR_ID\", MODE=\"0666\" OWNER=\"$user\"" > '/etc/udev/rules.d/51-android.rules'
             udevadm control --reload
 
-            log "Ensuring adb is running..."
+            log "Ensuring adb daemon is running..."
             adb kill-server
             adb start-server
 
@@ -112,7 +118,7 @@ while [[ "$#" -gt 0 ]]; do
                 exit 1
             fi
 
-            log "Your device is ready to use! Hooray!"
+            log "${bold}Your device is ready to use! Hooray!${normal}"
             log "Shutting down adb server..."
             adb kill-server
             exit 0

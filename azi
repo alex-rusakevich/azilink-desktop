@@ -8,6 +8,8 @@
 
 bold=$(tput bold)
 normal=$(tput sgr0)
+red=$(tput setaf 1)
+green=$(tput setaf 2)
 
 AZI_FILES_DIR="/usr/share/azilink-desktop"
 AZI_THANKS="Special thanks to ${bold}@aziwoqpd${normal} for his azilink. Vote for him on https://github.com/aziwoqpd/azilink"
@@ -90,8 +92,6 @@ while [[ "$#" -gt 0 ]]; do
         -reg|--register)
             check_sudo "Connecting your device"
 
-            kill_other_instances
-
             echo -n "Make sure you've enabled ${bold}'File/Media transfer mode'${normal} instead of 'Charging-only mode' and press Enter."
             read
 
@@ -127,11 +127,11 @@ while [[ "$#" -gt 0 ]]; do
 
             adb shell "exit 0"
             if [[ $? -ne 0 ]]; then 
-                echo "Unable to connect to your device. Did you accept connection on your phone?" >&2
+                echo "${red}${bold}Unable to connect to your device. Did you accept connection on your phone?${normal}" >&2
                 exit 1
             fi
 
-            log "${bold}Your device is ready to use! Hooray!${normal}"
+            log "${bold}${green}Your device is ready to use! Hooray!${normal}"
             log "Shutting down adb server..."
             adb kill-server
             exit 0
@@ -146,7 +146,7 @@ while [[ "$#" -gt 0 ]]; do
             adb kill-server
             adb start-server
 
-            log "Successfully reset."
+            log "${bold}${green}Successfully reset.${normal}"
             exit 0
         ;;
         *) 

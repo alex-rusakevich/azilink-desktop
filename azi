@@ -47,6 +47,17 @@ log() {
     echo "[$TIME_NOW] azilink: $@"
 }
 
+kill_other_instances() {
+    log "Killing the other instances of azilink if they exist..."
+
+    script_name=${BASH_SOURCE[0]}
+    for pid in $(pidof -x $script_name); do
+        if [ $pid != $$ ]; then
+            kill -KILL $pid
+        fi 
+    done
+}
+
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -h|--help) 
@@ -78,6 +89,8 @@ while [[ "$#" -gt 0 ]]; do
         ;;
         -reg|--register)
             check_sudo "Connecting your device"
+
+            kill_other_instances
 
             echo -n "Make sure you've enabled ${bold}'File/Media transfer mode'${normal} instead of 'Charging-only mode' and press Enter."
             read
@@ -147,6 +160,8 @@ done
 
 start() {
     check_sudo "Main functionality of azilink"
+
+    kill_other_instances
 
     log "Killing openvpn if running..."
     pkill openvpn

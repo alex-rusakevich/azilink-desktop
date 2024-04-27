@@ -2,18 +2,18 @@
 default: install
 
 uninstall:
-	rm -rf $(DESTDIR)/usr/share/azilink-desktop
-	rm -rf $(DESTDIR)/usr/bin/azi
+	rm -rf /usr/share/azilink-desktop
+	rm -rf /usr/bin/azi
 
 install: 
-	mkdir -p $(DESTDIR)/usr/share/azilink-desktop
-	mkdir -p $(DESTDIR)/usr/bin
+	mkdir -p /usr/share/azilink-desktop
+	mkdir -p /usr/bin
 
-	cp ./azilink.ovpn $(DESTDIR)/usr/share/azilink-desktop/azilink.ovpn
-	cp ./resolv.conf $(DESTDIR)/usr/share/azilink-desktop/resolv.conf
-	cp ./azilink.apk $(DESTDIR)/usr/share/azilink-desktop/azilink.apk
+	cp ./azilink.ovpn /usr/share/azilink-desktop/azilink.ovpn
+	cp ./azilink-resolv.conf /usr/share/azilink-desktop/azilink-resolv.conf
+	cp ./azilink.apk /usr/share/azilink-desktop/azilink.apk
 
-	cp ./azi $(DESTDIR)/usr/bin/azi
+	cp ./azi /usr/bin/azi
 
 run:
 	/usr/bin/azi

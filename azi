@@ -11,7 +11,12 @@ normal=$(tput sgr0)
 red=$(tput setaf 1)
 green=$(tput setaf 2)
 
-SCRIPT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; )
+RESOURCES_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; )
+
+if [ ! -f "$RESOURCES_PATH/azilink.ovpn" ]; then
+    RESOURCES_PATH=/usr/share/azilink-desktop
+fi
+
 export PATH=$PATH:/usr/share/azilink-desktop
 
 AZI_THANKS="Special thanks to ${bold}@aziwoqpd${normal} for his azilink. Vote for him on https://github.com/aziwoqpd/azilink"
@@ -68,7 +73,7 @@ while [[ "$#" -gt 0 ]]; do
             exit 0
         ;;
         -a|--install-apk) 
-            adb install -r "azilink.apk"
+            adb install -r "$RESOURCES_PATH/azilink.apk"
             exit 0
         ;;
         -r|--register)
@@ -152,7 +157,7 @@ start() {
     systemctl stop NetworkManager
 
     log "Updating resolv.conf..."
-    cp "azilink-resolv.conf" /etc/resolv.conf
+    cp "$RESOURCES_PATH/azilink-resolv.conf" /etc/resolv.conf
 }
 
 main() {
@@ -162,7 +167,7 @@ main() {
     modprobe tun
 
     log "Starting OpenVPN connection..."
-    openvpn --config "azilink.ovpn"
+    openvpn --config "$RESOURCES_PATH/azilink.ovpn"
 }
 
 finish() {

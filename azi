@@ -11,19 +11,18 @@ normal=$(tput sgr0)
 red=$(tput setaf 1)
 green=$(tput setaf 2)
 
-AZI_FILES_DIR="/usr/share/azilink-desktop"
+SCRIPT_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; )
+export PATH=$PATH:/usr/share/azilink-desktop
+
 AZI_THANKS="Special thanks to ${bold}@aziwoqpd${normal} for his azilink. Vote for him on https://github.com/aziwoqpd/azilink"
 AZI_USAGE="$(basename "$0") [-h -v -reg -r -i -I] [-p path] -- azilink pc companion
 
 where:
     -h, --help               show this help text and exit
-    -v, --version            show program's version and exit
-    -p, --path path_to_dir   set a new custom path to a folder with azilink.ovpn, resolv.conf and azilink.apk (default is '$AZI_FILES_DIR')
-    -reg, --register         register your phone with azilink app and USB-debugging mode on and exit
-    -r, --reset              reset connections with all the registered phones and exit         
-    -i, --install-apk        installing (or reinstalling) azilink's apk through adb and exit (you must allow installing apk using USB-debug mode in \
-your phone's developer settings)
-    -I, --info               show package's full info and exit"
+    -r, --register         register your phone with azilink app and USB-debugging mode on and exit
+    -R, --reset              reset connections with all the registered phones and exit         
+    -a, --install-apk        installing (or reinstalling) azilink's apk through adb and exit (you must allow installing apk using USB-debug mode in \
+your phone's developer settings)"
 AZI_GUIDE="This is what you need to do with your phone:
 1) enable developer settings on your phone;
 2) enable USB-debugging and setup through USB;
@@ -68,28 +67,11 @@ while [[ "$#" -gt 0 ]]; do
             echo "$AZI_GUIDE"
             exit 0
         ;;
-        -v|--version) 
-            echo `pacman -Q azilink-desktop-git`
+        -a|--install-apk) 
+            adb install -r "azilink.apk"
             exit 0
         ;;
-        -p|--path) 
-            AZI_FILES_DIR="$2";
-            if [[ -z "$AZI_FILES_DIR" ]]
-            then
-                echo "No path specified after '$1'" >&2
-                exit 1
-            fi
-            shift 
-        ;;
-        -i|--install-apk) 
-            adb install -r "$AZI_FILES_DIR/azilink.apk"
-            exit 0
-        ;;
-        -I|--info)
-            echo "`pacman -Qi azilink-desktop-git`"
-            exit 0
-        ;;
-        -reg|--register)
+        -r|--register)
             check_sudo "Connecting your device"
 
             echo -n "Make sure you've enabled ${bold}'File/Media transfer mode'${normal} instead of 'Charging-only mode' and press Enter."
@@ -111,7 +93,7 @@ while [[ "$#" -gt 0 ]]; do
             phone_number=$(( $phone_number - 1 ))
 
             AZI_DEVICE=${USB_DEVICES[phone_number]}
-            AZI_VENDOR_ID="$(echo "$AZI_DEVICE"| grep -P '(?<=ID\s)\d+(?=:)' --no-messages -o)"
+            AZI_VENDOR_ID="$(echo "$AZI_DEVICE"| grep -P '(?<=ID\s)\w+(?=:)' --no-messages -o)"
 
             [ $SUDO_USER ] && user=$SUDO_USER || user=`whoami`
 
@@ -136,7 +118,7 @@ while [[ "$#" -gt 0 ]]; do
             adb kill-server
             exit 0
         ;;
-        -r|--reset)
+        -R|--reset)
             check_sudo "Resetting your connection"
 
             rm -f /etc/udev/rules.d/51-android.rules
@@ -170,7 +152,7 @@ start() {
     systemctl stop NetworkManager
 
     log "Updating resolv.conf..."
-    cp "$AZI_FILES_DIR/resolv.conf" /etc/
+    cp "azilink-resolv.conf" /etc/resolv.conf
 }
 
 main() {
@@ -180,7 +162,7 @@ main() {
     modprobe tun
 
     log "Starting OpenVPN connection..."
-    openvpn --config "$AZI_FILES_DIR/azilink.ovpn"
+    openvpn --config "azilink.ovpn"
 }
 
 finish() {

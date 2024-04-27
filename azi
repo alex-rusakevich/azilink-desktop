@@ -157,6 +157,12 @@ start() {
     systemctl stop NetworkManager
 
     log "Updating resolv.conf..."
+
+    if [ -f " /etc/resolv.conf" ]; then
+        log "Making backup of /etc/resolv.conf..."
+        cp /etc/resolv.conf /etc/resolv.conf.bak
+    fi
+
     cp "$RESOURCES_PATH/azilink-resolv.conf" /etc/resolv.conf
 }
 
@@ -173,6 +179,14 @@ main() {
 finish() {
     log "Starting NetworkManager..."
     systemctl start NetworkManager
+
+    if [ -f " /etc/resolv.conf.bak" ]; then
+        log "Restored resolv.conf"
+        cp /etc/resolv.conf.bak /etc/resolv.conf
+    else
+        log "Removed azilink's resolv.conf"
+        rm /etc/resolv.conf
+    fi
 
     log "Exiting..."
     exit $1

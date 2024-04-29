@@ -24,7 +24,7 @@ AZI_USAGE="$(basename "$0") [-h -v -reg -r -i -I] [-p path] -- azilink pc compan
 
 where:
     -h, --help               show this help text and exit
-    -r, --register         register your phone with azilink app and USB-debugging mode on and exit
+    -r, --register           register your phone with azilink app and USB-debugging mode on and exit
     -R, --reset              reset connections with all the registered phones and exit         
     -a, --install-apk        installing (or reinstalling) azilink's apk through adb and exit (you must allow installing apk using USB-debug mode in \
 your phone's developer settings)"

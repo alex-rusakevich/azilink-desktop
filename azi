@@ -11,13 +11,19 @@ normal=$(tput sgr0)
 red=$(tput setaf 1)
 green=$(tput setaf 2)
 
-RESOURCES_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; )
+log() {
+    local TIME_NOW=`date "+%Y-%m-%d %H:%M:%S.%5N"`
+    echo "[$TIME_NOW] azilink: $@"
+}
+
+RESOURCES_PATH=$( dirname -- "$( readlink -f -- "$0"; )"; )/resources
 
 if [ ! -f "$RESOURCES_PATH/azilink.ovpn" ]; then
     RESOURCES_PATH=/usr/share/azilink-desktop
 fi
 
 export PATH=$PATH:/usr/share/azilink-desktop
+log "Resources path: $RESOURCES_PATH"
 
 AZI_THANKS="Special thanks to ${bold}@aziwoqpd${normal} for his azilink. Vote for him on https://github.com/aziwoqpd/azilink"
 AZI_USAGE="$(basename "$0") [-h -v -reg -r -i -I] [-p path] -- azilink pc companion
@@ -46,11 +52,6 @@ check_sudo() {
         echo "$1 requires ${bold}sudo${normal}" >&2
         exit 1
     fi
-}
-
-log() {
-    local TIME_NOW=`date "+%Y-%m-%d %H:%M:%S.%5N"`
-    echo "[$TIME_NOW] azilink: $@"
 }
 
 kill_other_instances() {
